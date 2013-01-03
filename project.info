@@ -1,0 +1,22 @@
+name = Project
+description = Defines the Project entity and associated features.
+package = Project
+core = 7.x
+version = VERSION
+
+; Entity API
+files[] = project.info.inc
+files[] = includes/entity.inc
+files[] = includes/controller.inc
+files[] = includes/ui.inc
+
+; Views
+files[] = plugins/views/project.views.inc
+files[] = plugins/views/project_handler_link_field.inc
+files[] = plugins/views/project_handler_edit_link_field.inc
+files[] = plugins/views/project_handler_delete_link_field.inc
+files[] = plugins/views/project_handler_project_operations_field.inc
+
+dependencies[] = entity
+dependencies[] = views
+dependencies[] = views_bulk_operations

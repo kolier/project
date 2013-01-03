@@ -1,0 +1,5 @@
+name = Project Release
+description = Defines the Project Release entity and associated features.
+package = Project
+core = 7.x
+version = VERSION

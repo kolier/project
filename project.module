@@ -1,0 +1,252 @@
+<?php
+
+/**
+ * @file
+ * Defines the core Project entity, including the entity itself, the
+ * bundle definitions (project types), and various API functions to manage
+ * projects and interact with them through forms and autocompletes.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function project_menu() {
+  $items = array();
+  
+  $items['admin/project'] = array(
+    'title' => 'Project',
+    'description' => 'Administer your project/issue tracking system.',
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('access administration pages'),
+    'file path' => drupal_get_path('module', 'system'),
+    'file' => 'system.admin.inc',
+    'weight' => -7,
+  );
+  $items['admin/project/config'] = array(
+    'title' => 'Configuration',
+    'description' => 'Configure settings and business rules for your project/issue tracking system.',
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('access administration pages'),
+    'file path' => drupal_get_path('module', 'system'),
+    'file' => 'system.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+    'weight' => 50,
+  );
+  
+  return $items;
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function project_menu_alter(&$items) {
+  $items['admin/project/projects/list']['context'] = MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE;
+  $items['admin/project/projects/types']['type'] = MENU_LOCAL_TASK;
+}
+
+/**
+ * Implements hook_entity_info().
+ */
+function project_entity_info() {
+  $return = array();
+  
+  $return['project'] = array(
+    'label' => t('Project'),
+    'plural label' => t('Projects'),
+    'base table' => 'project',
+    //'revision table' => 'project_revision',
+    'fieldable' => TRUE,
+    'entity keys' => array(
+      'id' => 'project_id',
+      'bundle' => 'type',
+      'label' => 'title',
+      //'revision' => 'revision_id',
+      'language' => 'language',
+    ),
+    'bundle keys' => array('bundle' => 'type'),
+    'bundles' => array(),
+    'load hook' => 'project_load',
+    'view modes' => array(
+      'full' => array(
+        'label' => t('Full content'),
+        'custom settings' => FALSE,
+      ),
+    ),
+    'entity class' => 'Project',
+    'controller class' => 'ProjectController',
+    'label callback' => 'entity_class_label',
+    'uri callback' => 'entity_class_uri',
+    'access callback' => 'project_access',
+    'access arguments' => array(
+      'user key' => 'uid',
+      'access tag' => 'project_access',
+    ),
+    'creation callback' => 'project_create',
+    'module' => 'project',
+    'token type' => 'project',
+    'admin ui' => array(
+      'path' => 'admin/project/projects',
+      'file' => 'project.admin.inc',
+      'controller class' => 'ProjectUIController',
+      'menu wildcard' => '%project',
+    ),
+  );
+  
+  $return['project_type'] = array(
+    'label' => t('Project type'),
+    'plural label' => t('Project types'),
+    'base table' => 'project_type',
+    'fieldable' => FALSE,
+    'bundle of' => 'project',
+    'exportable' => TRUE,
+    'entity keys' => array(
+      'id' => 'id',
+      'name' => 'type',
+      'label' => 'label',
+      'module' => 'module',
+      'status' => 'status',
+    ),
+    'entity class' => 'ProjectType',
+    'controller class' => 'ProjectTypeController',
+    'access callback' => 'project_type_access',
+    'access arguments' => array(
+      'user key' => 'uid',
+      'access tag' => 'project_type_access',
+    ),
+    'module' => 'project',
+    'token type' => 'project',
+    'admin ui' => array(
+      'path' => 'admin/project/projects/types',
+      'file' => 'project.admin.inc',
+      'controller class' => 'ProjectTypeUIController',
+    ),
+  );
+  
+  $types = db_select('project_type', 'p')
+  ->fields('p')
+  ->execute()
+  ->fetchAllAssoc('type');
+
+  foreach ($types as $type => $type_info) {
+    $return['project']['bundles'][$type] = array(
+      'label' => $type_info->label,
+      'admin' => array(
+        'path' => 'admin/project/projects/types/manage/%project_type',
+        'real path' => 'admin/project/projects/types/manage/' . $type,
+        'bundle argument' => 5,
+        //'access arguments' => array('administer project types'),
+      ),
+    );
+  }
+
+  return $return;
+}
+
+/**
+ * Entity creation callback.
+ */
+function project_create($values = array()) {
+  return entity_get_controller('project')->create($values);
+}
+
+/**
+ * Menu title callback.
+ */
+function project_page_title(Project $project) {
+  return $project->label();
+}
+
+/**
+ * Menu page callback.
+ */
+function project_page_view(Project $project) {
+  return $project->view();
+}
+
+/**
+ * @todo Complete the access check.
+ */
+function project_access($op, $project = NULL, $account = NULL) {
+  return TRUE;
+}
+
+/**
+ * @todo Complete the access check.
+ */
+function project_type_access($op, $project_type = NULL, $account = NULL) {
+  return TRUE;
+}
+
+/**
+ * Gets an array of all project types, keyed by the type name.
+ *
+ * @param string $type_name
+ *   If set, the type with the given name is returned.
+ *   
+ * @return mixed
+ *   ProjectType[].
+ *   Depending whether $type isset, an array of project types or a single one.
+ */
+function project_get_types($type_name = NULL) {
+  // entity_load will get the Entity controller for our project entity and call
+  // the load function of that object - we are loading entities by name here.
+  $types = entity_load_multiple_by_name('project_type', isset($type_name) ? array($type_name) : FALSE);
+  return isset($type_name) ? reset($types) : $types;
+}
+
+/**
+ * Menu argument loader; Load a model type by string.
+ *
+ * @param string $type
+ *   The machine-readable name of a model type to load.
+ *
+ * @return
+ *   A model type array or FALSE if $type does not exist.
+ */
+function project_type_load($type) {
+  return project_get_types($type);
+}
+
+/**
+ * Fetch a project object.
+ *
+ * @param int $id
+ *   Integer specifying the model id.
+ *
+ * @return
+ *   A fully-loaded $project object or FALSE if it cannot be loaded.
+ */
+function project_load($id) {
+  return entity_load_single('project', $id);
+}
+
+/**
+ * Implements hook_field_extra_fields().
+ */
+function project_field_extra_fields() {
+  $extra = array();
+
+  return $extra;
+}
+
+/**
+ * Implement hook_theme().
+ */
+function project_theme() {
+  return array(
+    'project_add_list' => array(
+      'variables' => array('content' => array()),
+      'file' => 'project.admin.inc',
+    ),
+  );
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function project_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'project') . '/plugins/views',
+  );
+}

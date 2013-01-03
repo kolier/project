@@ -1,0 +1,5 @@
+name = Project Issue
+description = Defines the Project issue entity and associated features.
+package = Project
+core = 7.x
+version = VERSION
