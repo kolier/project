@@ -19,7 +19,19 @@ class Project extends Entity {
   }
 
   protected function defaultUri() {
-    return array('path' => 'project/' . $this->project_id);
+    return array('path' => $this->entityInfo['admin ui']['path'] . '/' . $this->project_id);
+  }
+  
+  public function editUri() {
+    return array('path' => $this->entityInfo['admin ui']['path'] . '/' . $this->project_id . '/edit');
+  }
+  
+  public function deleteUri() {
+    return array('path' => $this->entityInfo['admin ui']['path'] . '/' . $this->project_id . '/delete');
+  }
+  
+  public function adminUri() {
+    return array('path' => $this->entityInfo['admin ui']['path']);
   }
 }
 

@@ -9,34 +9,41 @@
  * Implements hook_views_data_alter()
  */
 function project_views_data_alter(&$data) {
-  $data['project']['link_project'] = array(
+  // Links.
+  $data['project']['link'] = array(
     'field' => array(
       'title' => t('Link'),
       'help' => t('Provide a link to the project.'),
-      'handler' => 'project_handler_link_field',
+      'handler' => 'project_handler_field_project_link',
     ),
   );
-  $data['project']['edit_project'] = array(
+  $data['project']['link_edit'] = array(
     'field' => array(
-      'title' => t('Edit Link'),
+      'title' => t('Link edit'),
       'help' => t('Provide a link to the edit form for the project.'),
-      'handler' => 'project_handler_edit_link_field',
+      'handler' => 'project_handler_field_project_link_edit',
     ),
   );
-  $data['project']['delete_project'] = array(
+  $data['project']['link_delete'] = array(
     'field' => array(
-      'title' => t('Delete Link'),
+      'title' => t('Link delete'),
       'help' => t('Provide a link to delete the project.'),
-      'handler' => 'project_handler_delete_link_field',
+      'handler' => 'project_handler_field_project_link_delete',
     ),
   );
-  // This content of this field are decided based on the menu structure that
-  // follows project/%project_id/op
-  $data['project']['operations'] = array(
+  $data['project']['link_operations'] = array(
     'field' => array(
-      'title' => t('Operations links'),
+      'title' => t('Links operations'),
       'help' => t('Display all operations available for this project.'),
-      'handler' => 'project_handler_project_operations_field',
+      'handler' => 'project_handler_field_project_link_operations',
+    ),
+  );
+  
+  $data['project']['empty_text'] = array(
+    'title' => t('Empty text'),
+    'help' => t('Displays an appropriate empty text message for project lists.'),
+    'area' => array(
+      'handler' => 'project_handler_area_project_empty_text',
     ),
   );
 }

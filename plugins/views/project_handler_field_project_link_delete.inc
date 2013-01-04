@@ -6,8 +6,7 @@
  * as fields
  */
 
-
-class project_handler_delete_link_field extends project_handler_link_field {
+class project_handler_field_project_link_delete extends project_handler_link_field {
   function construct() {
     parent::construct();
     $this->additional_fields['type'] = 'type';

@@ -6,7 +6,7 @@
  * as fields.
  */
 
-class project_handler_link_field extends views_handler_field {
+class project_handler_field_project_link extends views_handler_field {
   function construct() {
     parent::construct();
 
@@ -17,7 +17,7 @@ class project_handler_link_field extends views_handler_field {
   function option_definition() {
     $options = parent::option_definition();
 
-    $options['text'] = array('default' => '', 'translatable' => TRUE);
+    $options['text'] = array('default' => 'View', 'translatable' => TRUE);
 
     return $options;
   }
@@ -38,8 +38,8 @@ class project_handler_link_field extends views_handler_field {
   }
 
   function render($values) {
-    $text = !empty($this->options['text']) ? $this->options['text'] : t('view');
     $project_id = $values->{$this->aliases['project_id']};
+    $text = !empty($this->options['text']) ? $this->options['text'] : url('project/' . $project_id, array('absolute' => TRUE));
 
     return l($text, 'project/' . $project_id);
   }

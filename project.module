@@ -72,6 +72,8 @@ function project_entity_info() {
         'custom settings' => FALSE,
       ),
     ),
+    'module' => 'project',
+    'token type' => 'project',
     'entity class' => 'Project',
     'controller class' => 'ProjectController',
     'label callback' => 'entity_class_label',
@@ -82,11 +84,10 @@ function project_entity_info() {
       'access tag' => 'project_access',
     ),
     'creation callback' => 'project_create',
-    'module' => 'project',
-    'token type' => 'project',
+    'delete callback' => 'project_delete',
     'admin ui' => array(
       'path' => 'admin/project/projects',
-      'file' => 'project.admin.inc',
+      'file' => drupal_get_path('module', 'project') . '/plugins/entity/ui.inc',
       'controller class' => 'ProjectUIController',
       'menu wildcard' => '%project',
     ),
@@ -117,7 +118,7 @@ function project_entity_info() {
     'token type' => 'project',
     'admin ui' => array(
       'path' => 'admin/project/projects/types',
-      'file' => 'project.admin.inc',
+      'file' => drupal_get_path('module', 'project') . '/plugins/entity/ui.inc',
       'controller class' => 'ProjectTypeUIController',
     ),
   );
@@ -143,6 +144,26 @@ function project_entity_info() {
 }
 
 /**
+ * Check if a project machine_name exists.
+ */
+function project_exists($value) {
+  $result = db_select('project', 'p')
+    ->fields('p', array('name'))
+    ->condition('name', $value)
+    ->execute()
+    ->fetchField();
+  
+  return $result;
+}
+
+/**
+ * Check if a project type machine_name exists.
+ */
+function project_type_exists($value) {
+  
+}
+
+/**
  * Entity creation callback.
  */
 function project_create($values = array()) {
@@ -150,17 +171,17 @@ function project_create($values = array()) {
 }
 
 /**
- * Menu title callback.
+ * Delete a project by project_id. Entity delete callback.
  */
-function project_page_title(Project $project) {
-  return $project->label();
+function project_delete($project_id) {
+  return project_delete_multiple(array($id));
 }
 
 /**
- * Menu page callback.
+ * Delete multiple projects by project_ids. Entity delete callback.
  */
-function project_page_view(Project $project) {
-  return $project->view();
+function project_delete_multiple(array $project_ids) {
+  return entity_get_controller('project')->delete($project_ids);
 }
 
 /**

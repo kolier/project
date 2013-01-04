@@ -41,15 +41,15 @@ function project_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
-      'name' => array(
-        'description' => 'The machine_name of this project.',
+      'title' => array(
+        'description' => 'The name of the project - a human-readable identifier.',
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
         'default' => '',
       ),
-      'title' => array(
-        'description' => 'The name of the project - a human-readable identifier.',
+      'name' => array(
+        'description' => 'The machine_name of this project.',
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
