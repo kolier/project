@@ -47,30 +47,31 @@ class ProjectUIController extends EntityDefaultUIController {
     // Menu item for project view/edit/delete.
     $items[$this->path . '/' . $wildcard] = array(
       'title callback' => 'project_page_title',
-      'title arguments' => array(1),
+      'title arguments' => array($id_count),
       'page callback' => 'project_page_view',
-      'page arguments' => array(1),
+      'page arguments' => array($id_count),
       'access callback' => 'project_access',
       'access arguments' => array('view', 1),
-      'type' => MENU_CALLBACK,
       'file' => 'project.pages.inc',
       'file path' => drupal_get_path('module', $this->entityInfo['module']),
     );
-    $items[$this->path . '/' . $wildcard] = array(
+    $items[$this->path . '/' . $wildcard . '/view'] = array(
+      'title' => 'View',
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+      'weight' => -10,
+      'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    );
+    $items[$this->path . '/' . $wildcard . '/edit'] = array(
+      'title' => 'Edit',
       'page callback' => 'project_edit_form_wrapper',
       'page arguments' => array($id_count),
       'access callback' => 'project_access',
       'access arguments' => array('edit', $id_count),
+      'type' => MENU_LOCAL_TASK,
       'weight' => 0,
       'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
       'file' => 'project.admin.inc',
       'file path' => drupal_get_path('module', $this->entityInfo['module']),
-    );
-    $items[$this->path . '/' . $wildcard . '/edit'] = array(
-      'title' => 'Edit',
-      'type' => MENU_DEFAULT_LOCAL_TASK,
-      'weight' => -10,
-      'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     );
     $items[$this->path . '/' . $wildcard . '/delete'] = array(
       'title' => 'Delete',

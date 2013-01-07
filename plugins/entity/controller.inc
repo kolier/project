@@ -46,6 +46,32 @@ class ProjectController extends EntityAPIController {
     $project = parent::create($values);
     return $project;
   }
+  
+  public function delete($project_ids, DatabaseTransaction $transaction = NULL) {
+    if (!empty($project_ids)) {
+      $projects = $this->load($project_ids, array());
+  
+      // Ensure the projects can actually be deleted.
+      /*
+      foreach ((array) $products as $product_id => $product) {
+        if (!commerce_product_can_delete($product)) {
+          unset($products[$product_id]);
+        }
+      }
+      */
+  
+      // If none of the specified products can be deleted, return FALSE.
+      if (empty($projects)) {
+        return FALSE;
+      }
+  
+      parent::delete(array_keys($projects), $transaction);
+      return TRUE;
+    }
+    else {
+      return FALSE;
+    }
+  }
 }
 
 /**

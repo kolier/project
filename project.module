@@ -40,8 +40,23 @@ function project_menu() {
  * Implements hook_menu_alter().
  */
 function project_menu_alter(&$items) {
-  $items['admin/project/projects/list']['context'] = MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE;
   $items['admin/project/projects/types']['type'] = MENU_LOCAL_TASK;
+}
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ */
+function project_menu_local_tasks_alter(&$data, $router_item, $root_path) {
+  // Add action link 'admin/project/projecs/add' on 'admin/project/projects'.
+  if ($root_path == 'admin/project/projects') {
+    $item = menu_get_item('admin/project/projects/add');
+    if ($item['access']) {
+      $data['actions']['output'][] = array(
+        '#theme' => 'menu_local_action',
+        '#link' => $item,
+      );
+    }
+  }
 }
 
 /**
@@ -174,7 +189,7 @@ function project_create($values = array()) {
  * Delete a project by project_id. Entity delete callback.
  */
 function project_delete($project_id) {
-  return project_delete_multiple(array($id));
+  return project_delete_multiple(array($project_id));
 }
 
 /**

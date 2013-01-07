@@ -39,8 +39,8 @@ class project_handler_field_project_link extends views_handler_field {
 
   function render($values) {
     $project_id = $values->{$this->aliases['project_id']};
-    $text = !empty($this->options['text']) ? $this->options['text'] : url('project/' . $project_id, array('absolute' => TRUE));
+    $text = !empty($this->options['text']) ? $this->options['text'] : url('admin/project/projects/' . $project_id, array('absolute' => TRUE));
 
-    return l($text, 'project/' . $project_id);
+    return l($text, 'admin/project/projects/' . $project_id);
   }
 }
